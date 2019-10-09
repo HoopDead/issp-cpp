@@ -22,7 +22,14 @@ void create_leaves()
 
 	   for(i = 1; i <= rows; i++)
 	   {
-		  cout << "\x1b[32m#";
+		  if(i%3 == 0)
+		  {
+		  	cout << "\x1b[33mo";
+		  }
+		  else
+		  {
+		 	 cout << "\x1b[32m#";
+		  }
 	   }
 	   rows += 2;
 
