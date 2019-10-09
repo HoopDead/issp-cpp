@@ -53,5 +53,5 @@ int main()
 {
 	create_leaves();
 	create_root();
-    	cout << "\x1b[0m";
+   cout << "\x1b[0m";
 }
