@@ -11,12 +11,12 @@ int main()
     double angle, result, resultroot;
     ofstream wyniki;
     wyniki.open("wyniki.dat", ios::out);
-    for(int i = 0; i < 360; i++)
+    for(int i = 0; i < 361; i++)
     {
         result = cos(i * PI / 180.0);
         resultroot = pow(cos(i * PI / 180.0), 2);
-        cout << i << "  " << result << "  " << resultroot << endl;
-        wyniki << i << "    " << result << "    " << resultroot << endl;
+        cout << i << "\t" << result << "\t" << resultroot << endl;
+        wyniki << i << "	" << result << "	" << resultroot << endl;
     }
     wyniki.close();
     return 0;

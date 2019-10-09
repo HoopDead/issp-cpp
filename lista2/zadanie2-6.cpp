@@ -10,7 +10,7 @@ void create_leaves()
 {
 	int i, j;
 	int whitespace = 10;
-    int rows = 1;
+   	int rows = 1;
 
 	for(j = 1; j <= 10; j++)
 	{
@@ -18,7 +18,7 @@ void create_leaves()
 	   {
 	      cout << " ";
 	   }
-        whitespace--;
+	whitespace--;
 
 	   for(i = 1; i <= rows; i++)
 	   {
@@ -46,5 +46,5 @@ int main()
 {
 	create_leaves();
 	create_root();
-    cout << "\x1b[0m";
+    	cout << "\x1b[0m";
 }
