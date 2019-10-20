@@ -1,56 +1,44 @@
 #include <iostream>
-#include <windows.h>
+#include <unistd.h>
 
 using namespace std;
 
+//227, 134, 20 - orange
+//237, 245, 7 - yellow
+void init()
+{
+    for(int i = 11; i < 26; i++)
+    {
+        for(int j = 11; j < 61; j++)
+        {
+            cout << "\x1b[" << i << ";" << j << "H" << "\x1b[48;5;27m ";
+        }
+    }
+}
+
+void randomize_particles()
+{
+    int randomY = rand()%(25-11 + 1) + 11;
+    int randomX = rand()%(60-11 + 1) + 11;
+    int randomcolor = rand()%(200-100 + 1) + 100;
+    cout << "\x1b[" << randomY << ";" << randomX << "H" << "\x1b[0m ";
+    cout << "\x1b[" << randomY << ";" << randomX << "H" << "\x1b[48;2;" << "255;" << randomcolor << ";37m " ;
+    usleep(7500);
+    randomY = 0;
+    randomX = 0;
+}
+
+
 int main()
 {
-    for(int i = 0; i < 16; i++)
+    bool run = true;
+    cout << "\x1b[2J";
+    init();
+    while(run)
     {
-	    cout << "\x1b[44m" << endl;
-        Sleep(150);
+        randomize_particles();
     }
-    for(int i = 0; i < 15; i++)
-    {
-        cout <<"o\x1b[1B";
-        Sleep(150);
-    }
-    for(int i = 0; i < 15; i++)
-    {
-        cout << "o\x1b[1A";
-        Sleep(150);
-    }
-    for(int i = 0; i < 4; i++)
-    {
-        cout <<"o\x1b[1B";
-        Sleep(150);
-    }
-    for(int i = 0; i < 4; i++)
-    {
-        cout << "o\x1b[1A";
-        Sleep(150);
-    }
-    for(int i = 0; i < 15; i++)
-    {
-        cout <<"o\x1b[1B";
-        Sleep(150);
-    }
-    for(int i = 0; i < 9; i++)
-    {
-        cout << "o\x1b[1A";
-        Sleep(150);
-    }
-    for(int i = 0; i < 9; i++)
-    {
-        cout << "o\x1b[1B";
-        Sleep(150);
-    }
-        for(int i = 0; i < 15; i++)
-    {
-        cout << "o\x1b[1A";
-        Sleep(150);
-    }
-    cout << "\x1b[100;100H";
     cout << "\x1b[0m";
+    cout << "\x1b[30;0H";
     return 0;
 }
