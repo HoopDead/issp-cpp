@@ -14,4 +14,4 @@ int main()
     cout << "Silnia z " << x << " to " << ans << endl;
     return 0;
 }
-//Program nie daje rady przy 40 - wyjaśnienie TO-DO.
+//Program nie daje rady przy 40.

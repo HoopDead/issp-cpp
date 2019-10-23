@@ -31,12 +31,11 @@ int main()
     cout << " #                 #    #  #  #  #    # ######                #" << endl;
     cout << " #                                                            #" << endl;
     cout << " ##############################################################" << endl;
-    cout << "                                 Menu                          " << endl;
+    cout << "                              === Menu ===                         " << endl;
     cout << "                             1. Zacznij gre                    " << endl;
     cout << "                  2. Informacje o grze i zacznij gre   " << endl;
     cout << "\x1b[94m[Menu]\x1b[0m Wybierz opcje: ";
     cin >> arg;
-    cout << randomNumber;
     menu(arg);
     for(;;)
     {
@@ -61,7 +60,6 @@ int main()
                 level = level + 5;
                 x = 0; attempt = 1;
                 randomNumber = rand()%(level*3-1 + 1) + 1;
-                cout << randomNumber;
                 cout << "\x1b[94m[!]\x1b[0mLosuje z przedzialu " << 3*level << endl;
             }
         }

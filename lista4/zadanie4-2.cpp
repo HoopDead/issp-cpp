@@ -1,10 +1,11 @@
 #include <iostream>
 #include <unistd.h>
 #include <fstream>
+#include <cstdlib>
 
 using namespace std;
 
-int createDoc(int s1, int s2, int s3, int s4, int s5)
+double createDoc(double s1, double s2, double s3, double s4, double s5)
 {
     ofstream plot;
     plot.open("dane.dat", ios::out);
@@ -44,11 +45,15 @@ int main()
         double randomNumber = (double)rand() / (RAND_MAX + 1.0);
         srednia5 += randomNumber;
     }
+    srednia1 /= 10;
+    srednia2 /= 100;
+    srednia3 /= 1000;
+    srednia4 /= 2500;
+    srednia5 /= 5000;
     createDoc(srednia1, srednia2, srednia3, srednia4, srednia5);
-    cout << srednia1 / 10 << endl;
-    cout << srednia2 / 100 << endl;
-    cout << srednia3 / 1000 << endl;
-    cout << srednia4 / 2500 << endl;
-    cout << srednia5 / 5000 << endl;
+    cout << srednia1  << endl;
+    cout << srednia2  << endl;
+    cout << srednia3  << endl;
+    cout << srednia4 << endl;
+    cout << srednia5 << endl;
 }
-

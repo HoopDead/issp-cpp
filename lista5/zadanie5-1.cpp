@@ -35,6 +35,30 @@ void init_game()
     }
 }
 
+void test_render_p1()
+{
+    for(int i = 0; i < 10; i++)
+    {
+        cout << i << "  ";
+        for (int j = 0; j < 10; j++)
+        {
+            if(player1_map[i][j] == 0)
+            {
+                cout << "? ";
+            }
+            else if(player1_map[i][j] == 1)
+            {
+                cout << "* ";
+            }
+            cout << "\x1b[0m";
+        }
+        cout << endl;
+    }
+}
+
+    // int x = (int) shipStart[0];
+    //int y = (int) shipStart[1];
+
 void place_ship_player1(int shipNumber)
 {
     string shipStart;
@@ -45,8 +69,17 @@ void place_ship_player1(int shipNumber)
     cin >> shipStart;
     cout << endl;
     int x = (int) shipStart[0];
-    int y = (int) shipStart[1];
-    cout << x << " " << y;
+    cout << x << " " <<  shipStart[1] << endl;
+    if(4 + shipNumber > 9)
+    {
+        cout << 4 + shipNumber << endl;
+        cout << "Poza zakresem" << endl;
+    }
+    else
+    {
+        player1_map[0][0] = 1;
+    }
+    test_render_p1();
 }
 
 void render_map_player1()
@@ -65,7 +98,11 @@ void render_map_player1()
         {
             if(player1_map[i][j] == 0)
             {
-                cout << "\x1b[48:5:12m  ";
+                cout << "? ";
+            }
+            else if(player1_map[i][j] == 1)
+            {
+                cout << "* ";
             }
             cout << "\x1b[0m";
         }
@@ -79,7 +116,6 @@ void render_map_player1()
         {
             cout << "Podaj statek, jak chcesz umiescic: ";
             cin.clear();
-            cin.ignore(INT8_MAX,'\n');
         };
         place_ship_player1(choose);
     }
