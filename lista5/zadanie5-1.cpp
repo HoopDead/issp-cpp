@@ -22,11 +22,72 @@ void map_clear()
                 }
         }
 }
+<<<<<<< HEAD
  
 void map_show()
 {
     cout << "# 0 1 2 3 4 5 6 7 8 9" << endl;
     for(int i=0; i < rows; i++)
+=======
+
+void test_render_p1()
+{
+    for(int i = 0; i < 10; i++)
+    {
+        cout << i << "  ";
+        for (int j = 0; j < 10; j++)
+        {
+            if(player1_map[i][j] == 0)
+            {
+                cout << "? ";
+            }
+            else if(player1_map[i][j] == 1)
+            {
+                cout << "* ";
+            }
+            cout << "\x1b[0m";
+        }
+        cout << endl;
+    }
+}
+
+    // int x = (int) shipStart[0];
+    //int y = (int) shipStart[1];
+
+void place_ship_player1(int shipNumber)
+{
+    string shipStart;
+    int direction;
+    cout << "Czy statek ma byc w pionie (1), czy w poziomie (2): ";
+    cin >> direction;
+    cout << "Gdzie ma byc pocztek statku: ";
+    cin >> shipStart;
+    cout << endl;
+    int x = (int) shipStart[0];
+    cout << x << " " <<  shipStart[1] << endl;
+    if(4 + shipNumber > 9)
+    {
+        cout << 4 + shipNumber << endl;
+        cout << "Poza zakresem" << endl;
+    }
+    else
+    {
+        player1_map[0][0] = 1;
+    }
+    test_render_p1();
+}
+
+void render_map_player1()
+{
+    cout << "     PLAYER 1 TURN" << endl;
+    cout << "Masz do dysposycji: " << endl;
+    cout << "* Jeden statek dwupoziomowy (2)" << endl;
+    cout << "* Jeden statek trzypoziomowy (3)" << endl;
+    cout << "* Jeden statek czteropoziomowy (4)" << endl;
+    cout << "* Jeden statek pieciopoziomowy (5)" << endl;
+    cout << "   A B C D E F G H I J" << endl;
+    for(int i = 1; i < 10; i++)
+>>>>>>> 62ce2b0864c2d703cd0f8d6727e9b61ec402b389
     {
         cout << i << " ";
         for(int j=0; j < elements; j++)
@@ -37,6 +98,7 @@ void map_show()
             }
             else if (unknown[i][j] == 1)
             {
+<<<<<<< HEAD
                 cout << "\x1b[48:5:244m  \x1b[0m";
             }
             else if (unknown[i][j] == 2)
@@ -46,6 +108,13 @@ void map_show()
             else if (unknown[i][j] == 3)
             {
                     cout << "??";
+=======
+                cout << "? ";
+            }
+            else if(player1_map[i][j] == 1)
+            {
+                cout << "* ";
+>>>>>>> 62ce2b0864c2d703cd0f8d6727e9b61ec402b389
             }
         }
         cout << "\x1b[0m";
@@ -58,6 +127,7 @@ int shipsleft()
         int c = 0;
         for(int i=0; i < rows; i++)
         {
+<<<<<<< HEAD
                 for(int j=0; j < elements; j++)
                 {
                         if(matrix[i][j] == 1)
@@ -66,6 +136,13 @@ int shipsleft()
         }
  
         return c;
+=======
+            cout << "Podaj statek, jak chcesz umiescic: ";
+            cin.clear();
+        };
+        place_ship_player1(choose);
+    }
+>>>>>>> 62ce2b0864c2d703cd0f8d6727e9b61ec402b389
 }
  
 void map_set()

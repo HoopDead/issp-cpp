@@ -1,9 +1,19 @@
 #include <iostream>
+#include <ofstream>
 using namespace std;
-long long fibonnaci(int x) {
+
+void createDoc(int number)
+{
+
+}
+
+long long fibonnaci(int x) 
+{
    if((x==1)||(x==0)) {
       return(x);
-   }else {
+   }
+   else 
+   {
       return(fibonnaci(x-1)+fibonnaci(x-2));
    }
 }

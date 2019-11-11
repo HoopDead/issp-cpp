@@ -22,7 +22,7 @@ int d(int x1, float x2)
     return x1 * x2;
 }
 
-int e(int tab[5], int len)
+int e(int tab[], int len)
 {
     int suma = 0;
     for(int i = 0; i < len; i++)
