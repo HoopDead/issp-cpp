@@ -10,9 +10,11 @@ const int HEIGHT = 1920;
 const int WIDTH = 1080;
 int playerScale = 1;
 int playerLevel = 1;
+int playerX = 960;
+int playerY = 540;
 int RADIUS = 10;
-int x = 960;
-int y = 540;
+std::vector <int> enemyGoingX(8);
+std::vector <int> enemyGoingY(8);
 int randomX_dot_array[100], randomY_dot_array[100], randomX_enemy_array[8], randomY_enemy_array[8];
 
 //
@@ -67,6 +69,27 @@ void fillEnemies()
     }
 }
 
+
+//TODO enemyScan
+
+void enemyScan()
+{
+    for(int i = 0; i < enemyGoingX.size(); i++)
+    {
+        int randomIndex = rand() % ((dots.size() + 0) - 1);
+        std::cout << "Kropka: " << std::endl;
+        std::cout << "X: " << randomX_dot_array[randomIndex] << " Y: " << randomY_dot_array[randomIndex] << std::endl;
+        std::cout << "Przeciwnik: " << std::endl;
+        std::cout << "X: " <<  randomX_enemy_array[i] << " Y: " << randomY_enemy_array[i] << std::endl;
+    }
+}
+
+
+//TODO EnemyMove
+void enemyMove()
+{
+}
+
 //Get level function
 //Get - playerLevel,
 //Return - it counts every playerLevel mod 5, if 0 = player Scale gets bigger by 1, if playerScale greater than 15 - it stops, because player object is too big, and it's to easy to win.
@@ -118,11 +141,6 @@ void checkCollisionDot()
 }
 
 
-//TODO EnemyMove
-void enemyMove()
-{
-}
-
 //PlayerMove function
 //Clicking arrows changes player position,
 //If player position is greater than map, it's going to stop him by collision.
@@ -131,35 +149,35 @@ void checkPlayerMove()
 {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        y = y-3;
+        playerY = playerY-3;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-         y = y+3;
+         playerY = playerY+3;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        x = x-3;
+        playerX = playerX-3;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        x = x+3;
+        playerX = playerX+3;
     }
-    if(x + player.getRadius() >= 3599 - player.getRadius() * player.getRadius())
+    if(playerX + player.getRadius() >= 3599 - player.getRadius() * player.getRadius())
     {
-        x = x-3;
+        playerX = playerX-3;
     }
-    if(x + player.getRadius() <= 0 + player.getRadius() * player.getRadius())
+    if(playerX + player.getRadius() <= 0 + player.getRadius() * player.getRadius())
     {
-        x = x+3;
+        playerX = playerX+3;
     }
-    if(y + player.getRadius() >= 2200 + player.getRadius() * player.getRadius())
+    if(playerY + player.getRadius() >= 2200 + player.getRadius() * player.getRadius())
     {
-        y = y-3;
+        playerY = playerY-3;
     }
-    if(y + player.getRadius() <= -100 + player.getRadius() * player.getRadius())
+    if(playerY + player.getRadius() <= -100 + player.getRadius() * player.getRadius())
     {
-        y = y+3;
+        playerY = playerY+3;
     }
 }
 
@@ -168,6 +186,7 @@ int main()
     srand(time(NULL));
     fillDots();
     fillEnemies();
+    enemyScan();
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Gra");
     followPlayer.setSize(1920, 1080);
     background.setSize(sf::Vector2f(4000, 2700));
@@ -189,12 +208,12 @@ int main()
             }
         }
         checkPlayerMove();
-        followPlayer.setCenter(x, y);
+        followPlayer.setCenter(playerX, playerY);
         window.clear();
         window.setView(followPlayer);
         window.draw(background);
         window.draw(player);
-        player.setPosition(x, y);
+        player.setPosition(playerX, playerY);
         for(int i = 0; i < dots.size(); i++)
         {
             window.draw(dots[i]);
