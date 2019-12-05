@@ -55,6 +55,8 @@ void fillDots()
     }
 }
 
+
+//TODO - End enemy movement, create vector to move to dot, and if enemy Scale > player Scale, enemy going to focus on player
 void fillEnemies()
 {
     for(int i = 0; i < enemies.size(); i++)
