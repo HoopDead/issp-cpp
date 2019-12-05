@@ -9,7 +9,7 @@
 const int HEIGHT = 1920;
 const int WIDTH = 1080;
 int playerScale = 1;
-int playerLevel = 0;
+int playerLevel = 1;
 int RADIUS = 10;
 int x = 960;
 int y = 540;
@@ -66,11 +66,10 @@ void getLevel(int playerLevel)
         playerScale++;
         std::cout << playerScale << std::endl;
     }
-    //TODO - zoom if player is bigger.
-    // if(playerScale == 3)
-    // {
-    //     followPlayer.zoom(2);
-    // }
+    if(playerLevel % 75 == 0)
+    {
+        followPlayer.zoom(1.5);
+    }
 }
 
 //checkCollisionEnemy
