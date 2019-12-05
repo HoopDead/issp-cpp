@@ -13,18 +13,15 @@ int playerLevel = 1;
 int RADIUS = 10;
 int x = 960;
 int y = 540;
-int enemyX = 10;
-int enemyY = 10;
-int randomX_array[100], randomY_array[100];
+int randomX_dot_array[100], randomY_dot_array[100], randomX_enemy_array[8], randomY_enemy_array[8];
 
 //
 //Generate SFML objects
 sf::CircleShape player(RADIUS); //Generate player object
-sf::CircleShape enemy(RADIUS + 5);
 sf::View followPlayer;
 sf::RectangleShape background;
 std::vector <sf::CircleShape> dots(100);
-
+std::vector <sf::CircleShape> enemies(8);
 
 //Get dot function
 //Get x and y cooridantes, and random color - red, green blue,
@@ -48,11 +45,25 @@ void fillDots()
     {
         int randomX_dot, randomY_dot, rr, rg, rb;
         getDot(&randomX_dot, &randomY_dot, &rr, &rg, &rb);
-        randomX_array[i] = randomX_dot;
-        randomY_array[i] = randomY_dot;
+        randomX_dot_array[i] = randomX_dot;
+        randomY_dot_array[i] = randomY_dot;
         sf::CircleShape dot(3);
         dots[i] = dot;
         dots[i].setFillColor(sf::Color(rr, rg, rb));
+    }
+}
+
+void fillEnemies()
+{
+    for(int i = 0; i < enemies.size(); i++)
+    {
+        int randomX_enemy, randomY_enemy, rr, rg, rb;
+        getDot(&randomX_enemy, &randomY_enemy, &rr, &rg, &rb);
+        randomX_enemy_array[i] = randomX_enemy;
+        randomY_enemy_array[i] = randomY_enemy;
+        sf::CircleShape enemy(RADIUS + 15);
+        enemies[i] = enemy;
+        enemies[i].setFillColor(sf::Color(rr, rg, rb));
     }
 }
 
@@ -65,6 +76,7 @@ void getLevel(int playerLevel)
     {
         playerScale++;
         std::cout << playerScale << std::endl;
+        std::cout << player.getRadius() << std::endl;
     }
     if(playerLevel % 75 == 0)
     {
@@ -77,7 +89,7 @@ void getLevel(int playerLevel)
 //TODO - check whos bigger, and pass score to bigger one.
 void checkCollisionEnemy()
 {
-	if (player.getGlobalBounds().intersects(enemy.getGlobalBounds())) //Check colision between player and enemy
+	// if (player.getGlobalBounds().intersects(enemy.getGlobalBounds())) //Check colision between player and enemy
     {
     }
 }
@@ -96,10 +108,10 @@ void checkCollisionDot()
             getDot(&randomX_dot, &randomY_dot, &rr, &rg, &rb);
             getLevel(playerLevel);
             playerLevel++;
-            randomX_array[i] = randomX_dot;
-            randomY_array[i] = randomY_dot;
+            randomX_dot_array[i] = randomX_dot;
+            randomY_dot_array[i] = randomY_dot;
             dots[i].setFillColor(sf::Color(rr, rg, rb));
-            dots[i].setPosition(randomX_array[i], randomY_array[i]);
+            dots[i].setPosition(randomX_dot_array[i], randomY_dot_array[i]);
             player.setScale(playerScale, playerScale);
         }
     }
@@ -114,6 +126,7 @@ void enemyMove()
 //PlayerMove function
 //Clicking arrows changes player position,
 //If player position is greater than map, it's going to stop him by collision.
+//TODO - Change getRadius to getScale - radius is const, scale changes.
 void checkPlayerMove()
 {
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -154,12 +167,12 @@ int main()
 {
     srand(time(NULL));
     fillDots();
+    fillEnemies();
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Gra");
     followPlayer.setSize(1920, 1080);
     background.setSize(sf::Vector2f(4000, 2700));
     background.setFillColor(sf::Color(59, 10, 69));
     background.setPosition(0, 0);
-    enemy.setFillColor(sf::Color::Red);
     player.setFillColor(sf::Color::Green);
     while (window.isOpen())
     {
@@ -185,8 +198,13 @@ int main()
         for(int i = 0; i < dots.size(); i++)
         {
             window.draw(dots[i]);
-            dots[i].setPosition(randomX_array[i], randomY_array[i]);
+            dots[i].setPosition(randomX_dot_array[i], randomY_dot_array[i]);
             checkCollisionDot();
+        }
+        for(int i = 0; i < enemies.size(); i++)
+        {
+            window.draw(enemies[i]);
+            enemies[i].setPosition(randomX_enemy_array[i], randomY_enemy_array[i]);
         }
         window.display();
     }
