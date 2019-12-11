@@ -13,17 +13,19 @@ int playerLevel = 1;
 int playerX = 960;
 int playerY = 540;
 int RADIUS = 10;
-std::vector <int> enemyGoingX(8);
-std::vector <int> enemyGoingY(8);
-int randomX_dot_array[100], randomY_dot_array[100], randomX_enemy_array[8], randomY_enemy_array[8];
+int randomX_dot_array[100], randomY_dot_array[100], randomX_enemy_array[10], randomY_enemy_array[10];
+std::vector <int> enemyGoingX(10);
+std::vector <int> enemyGoingY(10);
+std::vector <int> enemiesVelocity(10);
+std::vector <int> enemyScale(10);
+std::vector <int> enemyLevel(10);
 
-//
 //Generate SFML objects
 sf::CircleShape player(RADIUS); //Generate player object
 sf::View followPlayer;
 sf::RectangleShape background;
 std::vector <sf::CircleShape> dots(100);
-std::vector <sf::CircleShape> enemies(8);
+std::vector <sf::CircleShape> enemies(10);
 
 //Get dot function
 //Get x and y cooridantes, and random color - red, green blue,
@@ -56,7 +58,7 @@ void fillDots()
 }
 
 
-//TODO - End enemy movement, create vector to move to dot, and if enemy Scale > player Scale, enemy going to focus on player
+//Function get no argument, and returns enemy object, with random color, and random position on player. Enemy is always smaller 1 unit than player.
 void fillEnemies()
 {
     for(int i = 0; i < enemies.size(); i++)
@@ -65,15 +67,17 @@ void fillEnemies()
         getDot(&randomX_enemy, &randomY_enemy, &rr, &rg, &rb);
         randomX_enemy_array[i] = randomX_enemy;
         randomY_enemy_array[i] = randomY_enemy;
-        sf::CircleShape enemy(RADIUS + 15);
+        sf::CircleShape enemy(15);
         enemies[i] = enemy;
         enemies[i].setFillColor(sf::Color(rr, rg, rb));
+        enemiesVelocity[i] = 2;
     }
 }
 
 
-//TODO enemyScan
 
+//Function loop every enemey object, and returns random dots to follow by enemy. The function is called only once - at begging of main function,
+//because points to follow don't have to change - collision with dot leads to change position.
 void enemyScan()
 {
     for(int i = 0; i < enemyGoingX.size(); i++)
@@ -87,9 +91,92 @@ void enemyScan()
 }
 
 
-//TODO EnemyMove
+//Function is called every time, that any object collide with dot.
+//It returns new dot position, and new color of dot.
+void changeDotPosition(int i)
+{
+    int randomX_dot, randomY_dot, rr, rg, rb;
+    getDot(&randomX_dot, &randomY_dot, &rr, &rg, &rb);
+    randomX_dot_array[i] = randomX_dot;
+    randomY_dot_array[i] = randomY_dot;
+    dots[i].setFillColor(sf::Color(rr, rg, rb));
+    dots[i].setPosition(randomX_dot_array[i], randomY_dot_array[i]);
+}
+
+
+//Function get index of enemy object in enemyLevel and enemyScale vector, if indicated element is % 5 it gets bigger by 1 scale unit.
+void getEnemyLevel(int i)
+{
+    if(enemyLevel[i] % 5 == 0)
+    {
+        enemyScale[i]++;
+        enemies[i].setScale(enemyScale[i], enemyScale[i]);
+    }
+}
+
+//checkCollisionEnemyDot
+//Function get argument - circleShape enemy, and check if player collided with ANY dot on map, if statement is true, changeDotPosition function is called,
+//and enemy is going to follow new coordinates.
+void checkCollisionEnemyDot(sf::CircleShape enemy, int index)
+{
+    for(int i = 0; i < dots.size(); i++)
+    {
+        if(enemy.getGlobalBounds().intersects(dots[i].getGlobalBounds()))
+        {
+            changeDotPosition(i);
+            enemyLevel[index]++;
+            getEnemyLevel(index);
+        }
+    }
+}
+
+
+//enemyMove function is looping every enemy object, and then if enemy is smaller than player, it's going to get some level and get bigger, else it will follow player till collision, and win.
 void enemyMove()
 {
+    for(int i = 0; i < enemies.size(); i++)
+    {
+        sf::Vector2f enemyScale = enemies[i].getScale();
+        sf::Vector2f playerScale = player.getScale();
+        if(enemies[i].getRadius() * enemyScale.x < player.getRadius() * playerScale.x)
+        {
+            if (randomX_enemy_array[i] > randomX_dot_array[i])
+            {
+                randomX_enemy_array[i] -= enemiesVelocity[i];
+            }
+            if (randomX_enemy_array[i] < randomX_dot_array[i])
+            {
+                randomX_enemy_array[i] += enemiesVelocity[i];
+            }
+            if (randomY_enemy_array[i] > randomY_dot_array[i])
+            {
+                randomY_enemy_array[i] -= enemiesVelocity[i];
+            }
+            if (randomY_enemy_array[i] < randomY_dot_array[i])
+            {
+                randomY_enemy_array[i] += enemiesVelocity[i];
+            }
+        }
+        else
+        {
+            if (randomX_enemy_array[i] > playerX)
+            {
+                randomX_enemy_array[i] -= enemiesVelocity[i];
+            }
+            if (randomX_enemy_array[i] < playerX)
+            {
+                randomX_enemy_array[i] += enemiesVelocity[i];
+            }
+            if (randomY_enemy_array[i] > playerY)
+            {
+                randomY_enemy_array[i] -= enemiesVelocity[i];
+            }
+            if (randomY_enemy_array[i] < playerY)
+            {
+                randomY_enemy_array[i] += enemiesVelocity[i];
+            }
+        }
+    }
 }
 
 //Get level function
@@ -97,7 +184,7 @@ void enemyMove()
 //Return - it counts every playerLevel mod 5, if 0 = player Scale gets bigger by 1, if playerScale greater than 15 - it stops, because player object is too big, and it's to easy to win.
 void getLevel(int playerLevel)
 {
-    if(playerLevel % 5 == 0)
+    if(playerLevel % 7 == 0)
     {
         playerScale++;
         std::cout << playerScale << std::endl;
@@ -109,15 +196,6 @@ void getLevel(int playerLevel)
     }
 }
 
-//checkCollisionEnemy
-//Check if player collided with enemy
-//TODO - check whos bigger, and pass score to bigger one.
-void checkCollisionEnemy()
-{
-	// if (player.getGlobalBounds().intersects(enemy.getGlobalBounds())) //Check colision between player and enemy
-    {
-    }
-}
 
 
 //checkCollision dot
@@ -129,15 +207,31 @@ void checkCollisionDot()
     {
         if(player.getGlobalBounds().intersects(dots[i].getGlobalBounds()))
         {
-            int randomX_dot, randomY_dot, rr, rg, rb;
-            getDot(&randomX_dot, &randomY_dot, &rr, &rg, &rb);
             getLevel(playerLevel);
             playerLevel++;
-            randomX_dot_array[i] = randomX_dot;
-            randomY_dot_array[i] = randomY_dot;
-            dots[i].setFillColor(sf::Color(rr, rg, rb));
-            dots[i].setPosition(randomX_dot_array[i], randomY_dot_array[i]);
+            changeDotPosition(i);
             player.setScale(playerScale, playerScale);
+        }
+    }
+}
+
+
+//checkCollisionPlayerEnemy function, it get's two arguments - enemy object, and index - indicated enemy object in vector, then check whois bigger, and
+//return print with information
+//TODO - get level from smaller one, to bigger one
+void checkCollisionPlayerEnemy(sf::CircleShape enemy, int index)
+{
+    if(player.getGlobalBounds().intersects(enemy.getGlobalBounds()))
+    {
+        sf::Vector2f enemyScale = enemy.getScale();
+        sf::Vector2f playerScale = player.getScale();
+        if(enemy.getRadius() * enemyScale.x > player.getRadius() * playerScale.x)
+        {
+            std::cout << "COLLSION: Enemy Bigger! \n";
+        }
+        else
+        {
+            std::cout << "COLLISION: Player Bigger! \n";
         }
     }
 }
@@ -209,6 +303,7 @@ int main()
                 window.close();
             }
         }
+        enemyMove();
         checkPlayerMove();
         followPlayer.setCenter(playerX, playerY);
         window.clear();
@@ -226,6 +321,8 @@ int main()
         {
             window.draw(enemies[i]);
             enemies[i].setPosition(randomX_enemy_array[i], randomY_enemy_array[i]);
+            checkCollisionEnemyDot(enemies[i], i);
+            checkCollisionPlayerEnemy(enemies[i], i);
         }
         window.display();
     }
