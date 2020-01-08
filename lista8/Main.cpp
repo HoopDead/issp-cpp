@@ -8,32 +8,29 @@
 //Const and init variables
 const int HEIGHT = 1920;
 const int WIDTH = 1080;
-int playerScale = 1;
-int playerLevel = 1;
-int playerX = 960;
-int playerY = 540;
-int RADIUS = 10;
-int randomX_dot_array[100], randomY_dot_array[100], randomX_enemy_array[10], randomY_enemy_array[10];
-std::vector <int> enemyGoingX(10);
-std::vector <int> enemyGoingY(10);
-std::vector <int> enemiesVelocity(10);
-std::vector <int> enemyScale(10);
-std::vector <int> enemyLevel(10);
+int playerLevel = 10;
+int randomX_dot_array[125], randomY_dot_array[125], randomX_enemy_array[25], randomY_enemy_array[25];
+int playerPosition[2] = {960, 540};
+int playerVelocity = 3;
+std::vector <int> enemyGoingX(25);
+std::vector <int> enemyGoingY(25);
+std::vector <int> enemiesVelocity(25);
+std::vector <int> enemyLevel(25);
 
 //Generate SFML objects
-sf::CircleShape player(RADIUS); //Generate player object
+sf::CircleShape player(playerLevel); //Generate player object
 sf::View followPlayer;
 sf::RectangleShape background;
-std::vector <sf::CircleShape> dots(100);
-std::vector <sf::CircleShape> enemies(10);
+std::vector <sf::CircleShape> dots(125);
+std::vector <sf::CircleShape> enemies(25);
 
 //Get dot function
 //Get x and y cooridantes, and random color - red, green blue,
 //Return x and y coords for next dot, and color for it.
 void getDot(int *x, int *y, int *randomR, int *randomG, int *randomB)
 {
-    *x = rand() % ((3400 + 30) - 30);
-    *y = rand() % ((1800 + 250) - 250);
+    *x = rand() % ((4000+playerLevel+10 + 30) - 30);
+    *y = rand() % ((2600+playerLevel+10 + 250) - 250);
     *randomR = rand() % ((256 + 1) - 1);
     *randomG = rand() % ((256 + 1) - 1);
     *randomB = rand() % ((256 + 1) - 1);
@@ -51,7 +48,7 @@ void fillDots()
         getDot(&randomX_dot, &randomY_dot, &rr, &rg, &rb);
         randomX_dot_array[i] = randomX_dot;
         randomY_dot_array[i] = randomY_dot;
-        sf::CircleShape dot(3);
+        sf::CircleShape dot(5);
         dots[i] = dot;
         dots[i].setFillColor(sf::Color(rr, rg, rb));
     }
@@ -67,11 +64,17 @@ void fillEnemies()
         getDot(&randomX_enemy, &randomY_enemy, &rr, &rg, &rb);
         randomX_enemy_array[i] = randomX_enemy;
         randomY_enemy_array[i] = randomY_enemy;
-        sf::CircleShape enemy(15);
+        sf::CircleShape enemy(playerLevel);
         enemies[i] = enemy;
         enemies[i].setFillColor(sf::Color(rr, rg, rb));
-        enemiesVelocity[i] = 2;
+        enemiesVelocity[i] = 3;
+        enemyLevel[i] = 10;
     }
+}
+
+int getRandomValue(int size)
+{
+    return rand() % size + 1;
 }
 
 
@@ -107,11 +110,8 @@ void changeDotPosition(int i)
 //Function get index of enemy object in enemyLevel and enemyScale vector, if indicated element is % 5 it gets bigger by 1 scale unit.
 void getEnemyLevel(int i)
 {
-    if(enemyLevel[i] % 5 == 0)
-    {
-        enemyScale[i]++;
-        enemies[i].setScale(enemyScale[i], enemyScale[i]);
-    }
+    enemyLevel[i]++;
+    enemies[i].setRadius(enemyLevel[i]);
 }
 
 //checkCollisionEnemyDot
@@ -124,7 +124,6 @@ void checkCollisionEnemyDot(sf::CircleShape enemy, int index)
         if(enemy.getGlobalBounds().intersects(dots[i].getGlobalBounds()))
         {
             changeDotPosition(i);
-            enemyLevel[index]++;
             getEnemyLevel(index);
         }
     }
@@ -136,9 +135,7 @@ void enemyMove()
 {
     for(int i = 0; i < enemies.size(); i++)
     {
-        sf::Vector2f enemyScale = enemies[i].getScale();
-        sf::Vector2f playerScale = player.getScale();
-        if(enemies[i].getRadius() * enemyScale.x < player.getRadius() * playerScale.x)
+        if((enemies[i].getRadius() <= player.getRadius()) || (playerVelocity == 0))
         {
             if (randomX_enemy_array[i] > randomX_dot_array[i])
             {
@@ -159,19 +156,19 @@ void enemyMove()
         }
         else
         {
-            if (randomX_enemy_array[i] > playerX)
+            if (randomX_enemy_array[i] > playerPosition[0])
             {
                 randomX_enemy_array[i] -= enemiesVelocity[i];
-            }
-            if (randomX_enemy_array[i] < playerX)
+            }   
+            if (randomX_enemy_array[i] < playerPosition[0])
             {
                 randomX_enemy_array[i] += enemiesVelocity[i];
             }
-            if (randomY_enemy_array[i] > playerY)
+            if (randomY_enemy_array[i] > playerPosition[1])
             {
                 randomY_enemy_array[i] -= enemiesVelocity[i];
             }
-            if (randomY_enemy_array[i] < playerY)
+            if (randomY_enemy_array[i] < playerPosition[1])
             {
                 randomY_enemy_array[i] += enemiesVelocity[i];
             }
@@ -184,19 +181,17 @@ void enemyMove()
 //Return - it counts every playerLevel mod 5, if 0 = player Scale gets bigger by 1, if playerScale greater than 15 - it stops, because player object is too big, and it's to easy to win.
 void getLevel(int playerLevel)
 {
-    if(playerLevel % 7 == 0)
-    {
-        playerScale++;
-        std::cout << playerScale << std::endl;
-        std::cout << player.getRadius() << std::endl;
-    }
-    if(playerLevel % 75 == 0)
-    {
-        followPlayer.zoom(1.5);
-    }
+    player.setRadius(playerLevel);
 }
 
 
+
+void mapIteration()
+{
+    background.setSize(sf::Vector2f(4000+playerLevel+10, 2700+playerLevel+10));
+    background.setFillColor(sf::Color(59, 10, 69));
+    background.setPosition(0, 0);
+}
 
 //checkCollision dot
 //Get - nothing
@@ -210,7 +205,8 @@ void checkCollisionDot()
             getLevel(playerLevel);
             playerLevel++;
             changeDotPosition(i);
-            player.setScale(playerScale, playerScale);
+            mapIteration();
+            followPlayer.zoom(1.003f);
         }
     }
 }
@@ -225,55 +221,75 @@ void checkCollisionPlayerEnemy(sf::CircleShape enemy, int index)
     {
         sf::Vector2f enemyScale = enemy.getScale();
         sf::Vector2f playerScale = player.getScale();
-        if(enemy.getRadius() * enemyScale.x > player.getRadius() * playerScale.x)
+        if(enemy.getRadius()> player.getRadius())
         {
             std::cout << "COLLSION: Enemy Bigger! \n";
+            player.setRadius(0);
+            playerVelocity = 0;
         }
         else
         {
-            std::cout << "COLLISION: Player Bigger! \n";
+            playerLevel += enemies[index].getRadius()/2;
+            player.setRadius(playerLevel);
+            enemies[index].setRadius(0);
+            enemiesVelocity[index] = 0;
         }
     }
 }
 
+bool TimeListener(sf::Clock clock)
+{
+    sf::Time elapsed1 = clock.getElapsedTime();
+    std::cout << elapsed1.asSeconds() << std::endl;
+    return false;
+}
 
 //PlayerMove function
 //Clicking arrows changes player position,
 //If player position is greater than map, it's going to stop him by collision.
 //TODO - Change getRadius to getScale - radius is const, scale changes.
-void checkPlayerMove()
+void checkPlayerMove(sf::Clock clock)
 {
+    sf::Vector2f borderSize = background.getSize();
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
     {
-        playerY = playerY-3;
+        playerPosition[1] -= playerVelocity;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
     {
-         playerY = playerY+3;
+         playerPosition[1] += playerVelocity;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
-        playerX = playerX-3;
+        playerPosition[0] -= playerVelocity;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
-        playerX = playerX+3;
+        playerPosition[0] += playerVelocity;
     }
-    if(playerX + player.getRadius() >= 3599 - player.getRadius() * player.getRadius())
+    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
     {
-        playerX = playerX-3;
+        if(TimeListener(clock))
+        {
+            playerPosition[0] = getRandomValue(borderSize.x) + 1;
+            playerPosition[1] = getRandomValue(borderSize.y) + 1;
+        }
     }
-    if(playerX + player.getRadius() <= 0 + player.getRadius() * player.getRadius())
+    if(playerPosition[0] + player.getRadius() >= borderSize.x)
     {
-        playerX = playerX+3;
+        playerPosition[0] -= playerVelocity;
     }
-    if(playerY + player.getRadius() >= 2200 + player.getRadius() * player.getRadius())
+    if(playerPosition[0] + player.getRadius() <= 0)
     {
-        playerY = playerY-3;
+        playerPosition[0] += playerVelocity;
     }
-    if(playerY + player.getRadius() <= -100 + player.getRadius() * player.getRadius())
+    if(playerPosition[1] + player.getRadius() >= borderSize.y)
     {
-        playerY = playerY+3;
+        playerPosition[1] -= playerVelocity;
+    }
+    if(playerPosition[1] + player.getRadius() <= 0)
+    {
+        playerPosition[1] += playerVelocity;
     }
 }
 
@@ -283,8 +299,9 @@ int main()
     fillDots();
     fillEnemies();
     enemyScan();
+    sf::Clock clock;
     sf::RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "Gra");
-    followPlayer.setSize(1920, 1080);
+    followPlayer.setSize(1920.f, 1080.f);
     background.setSize(sf::Vector2f(4000, 2700));
     background.setFillColor(sf::Color(59, 10, 69));
     background.setPosition(0, 0);
@@ -293,7 +310,7 @@ int main()
     {
         sf::Event event;
         while (window.pollEvent(event))
-        {   
+           {   
             if (event.type == sf::Event::Closed)
             {
                 window.close();
@@ -304,13 +321,13 @@ int main()
             }
         }
         enemyMove();
-        checkPlayerMove();
-        followPlayer.setCenter(playerX, playerY);
+        checkPlayerMove(clock);
+        followPlayer.setCenter(playerPosition[0]+player.getRadius(), playerPosition[1]+player.getRadius());
         window.clear();
         window.setView(followPlayer);
         window.draw(background);
         window.draw(player);
-        player.setPosition(playerX, playerY);
+        player.setPosition(playerPosition[0], playerPosition[1]);
         for(int i = 0; i < dots.size(); i++)
         {
             window.draw(dots[i]);
@@ -323,6 +340,10 @@ int main()
             enemies[i].setPosition(randomX_enemy_array[i], randomY_enemy_array[i]);
             checkCollisionEnemyDot(enemies[i], i);
             checkCollisionPlayerEnemy(enemies[i], i);
+        }
+        if(TimeListener(clock))
+        {
+            clock.restart();
         }
         window.display();
     }
