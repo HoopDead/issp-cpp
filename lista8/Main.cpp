@@ -9,7 +9,8 @@
 const int HEIGHT = 1920;
 const int WIDTH = 1080;
 int playerLevel = 10;
-int randomX_dot_array[125], randomY_dot_array[125], randomX_enemy_array[25], randomY_enemy_array[25];
+const int N = 125;
+int randomX_dot_array[N], randomY_dot_array[N], randomX_enemy_array[25], randomY_enemy_array[25];
 int playerPosition[2] = {960, 540};
 int playerVelocity = 3;
 std::vector <int> enemyGoingX(25);
@@ -72,6 +73,8 @@ void fillEnemies()
     }
 }
 
+
+//Test function, used in teleport random - actually left for TODO
 int getRandomValue(int size)
 {
     return rand() % size + 1;
@@ -107,7 +110,7 @@ void changeDotPosition(int i)
 }
 
 
-//Function get index of enemy object in enemyLevel and enemyScale vector, if indicated element is % 5 it gets bigger by 1 scale unit.
+//Function get index of enemy object in enemyLevel and increase radius of it by 1.
 void getEnemyLevel(int i)
 {
     enemyLevel[i]++;
@@ -178,14 +181,16 @@ void enemyMove()
 
 //Get level function
 //Get - playerLevel,
-//Return - it counts every playerLevel mod 5, if 0 = player Scale gets bigger by 1, if playerScale greater than 15 - it stops, because player object is too big, and it's to easy to win.
+//Return - increase player radius by 1.
 void getLevel(int playerLevel)
 {
     player.setRadius(playerLevel);
 }
 
 
-
+//Iteration map function
+//Get - no args
+//Return - bigger map by 10 units
 void mapIteration()
 {
     background.setSize(sf::Vector2f(4000+playerLevel+10, 2700+playerLevel+10));
@@ -213,8 +218,7 @@ void checkCollisionDot()
 
 
 //checkCollisionPlayerEnemy function, it get's two arguments - enemy object, and index - indicated enemy object in vector, then check whois bigger, and
-//return print with information
-//TODO - get level from smaller one, to bigger one
+//return - who's bigger - the bigger object is going to eat enemy.
 void checkCollisionPlayerEnemy(sf::CircleShape enemy, int index)
 {
     if(player.getGlobalBounds().intersects(enemy.getGlobalBounds()))
@@ -223,7 +227,6 @@ void checkCollisionPlayerEnemy(sf::CircleShape enemy, int index)
         sf::Vector2f playerScale = player.getScale();
         if(enemy.getRadius()> player.getRadius())
         {
-            std::cout << "COLLSION: Enemy Bigger! \n";
             player.setRadius(0);
             playerVelocity = 0;
         }
@@ -237,6 +240,7 @@ void checkCollisionPlayerEnemy(sf::CircleShape enemy, int index)
     }
 }
 
+//TODO Function - Speciall spell, to teleport player on random coordinates.
 bool TimeListener(sf::Clock clock)
 {
     sf::Time elapsed1 = clock.getElapsedTime();
@@ -247,7 +251,8 @@ bool TimeListener(sf::Clock clock)
 //PlayerMove function
 //Clicking arrows changes player position,
 //If player position is greater than map, it's going to stop him by collision.
-//TODO - Change getRadius to getScale - radius is const, scale changes.
+//Get - clock object, TODO spell to teleport
+//Return - player collision with border, or player move.
 void checkPlayerMove(sf::Clock clock)
 {
     sf::Vector2f borderSize = background.getSize();
